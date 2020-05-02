@@ -1,4 +1,4 @@
-from wallstreet.wallstreet import Stock, Call, Put
+from wallstreet.wallstreet import Stock, Call, Put, Option
 from pkg_resources import get_distribution, DistributionNotFound
 import os.path
 

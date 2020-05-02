@@ -341,7 +341,7 @@ class Call(Option):
                     print('No option for given strike, using %s instead' % closest_strike)
                     self.set_strike(closest_strike)
 
-    def set_strike(self, val):
+    def set_strike(self, val, contract_price=None):
         """ Specifies a strike price """
 
         d = {}
@@ -363,11 +363,26 @@ class Call(Option):
             self.code = d.get('s') or d.get('contractSymbol')
             self.itm = ((self.__class__.Option_type == 'Call' and self.underlying.price > self.strike) or
                 (self.__class__.Option_type == 'Put' and self.underlying.price < self.strike)) # in the money
+
+            # JK EDIT - add contract price
+            if contract_price is None:
+                contract_price = self._price
+            elif contract_price == 'last':
+                contract_price = self._price
+            elif contract_price == 'bid':
+                contract_price = self._bid
+            elif contract_price == 'ask':
+                contract_price = self._ask
+            elif contract_price == 'mid':
+                contract_price = (self._bid + self._ask)/2
+            else:
+                raise ValueError("contract price must be last, bid, ask, or mid")
+
             self.BandS = BlackandScholes(
                     self.underlying.price,
                     self.strike,
                     self.T,
-                    self._price,
+                    contract_price,
                     self.rate(self.T),
                     self.__class__.Option_type,
                     self.q
