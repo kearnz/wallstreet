@@ -236,7 +236,6 @@ class Option:
 
             if all((d, m, y)) and not self._has_run and not strict:
                 closest_date = min(self._exp, key=lambda x: abs(x - self._expiration))
-                print('No options listed for given date, using %s instead' % closest_date.strftime(DATE_FORMAT))
                 self._has_run = True
                 self.__init__(quote, closest_date.day, closest_date.month, closest_date.year, source=source)
             else:
