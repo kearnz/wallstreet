@@ -327,7 +327,9 @@ class Call(Option):
         self.T = (self._expiration - date.today()).days/365
         self.q = self.underlying.dy
         self.ticker = quote
+        self.contract_price = None
         self.strike = None
+        self.BandS = None
         self.strikes = tuple(parse(dic['strike']) for dic in self.data
                              if dic.get('p') != '-')
         if strike:
@@ -341,7 +343,7 @@ class Call(Option):
                     print('No option for given strike, using %s instead' % closest_strike)
                     self.set_strike(closest_strike)
 
-    def set_strike(self, val, contract_price=None):
+    def set_strike(self, val, cp=None):
         """ Specifies a strike price """
 
         d = {}
@@ -365,16 +367,16 @@ class Call(Option):
                 (self.__class__.Option_type == 'Put' and self.underlying.price < self.strike)) # in the money
 
             # JK EDIT - add contract price
-            if contract_price is None:
-                contract_price = self._price
-            elif contract_price == 'last':
-                contract_price = self._price
-            elif contract_price == 'bid':
-                contract_price = self._bid
-            elif contract_price == 'ask':
-                contract_price = self._ask
-            elif contract_price == 'mid':
-                contract_price = (self._bid + self._ask)/2
+            if cp is None:
+                self.contract_price = self._price
+            elif cp == 'last':
+                self.contract_price = self._price
+            elif cp == 'bid':
+                self.contract_price = self._bid
+            elif cp == 'ask':
+                self.contract_price = self._ask
+            elif cp == 'mid':
+                self.contract_price = (self._bid + self._ask)/2
             else:
                 raise ValueError("contract price must be last, bid, ask, or mid")
 
@@ -382,7 +384,7 @@ class Call(Option):
                     self.underlying.price,
                     self.strike,
                     self.T,
-                    contract_price,
+                    self.contract_price,
                     self.rate(self.T),
                     self.__class__.Option_type,
                     self.q

@@ -73,6 +73,7 @@ class BlackandScholes:
             return self._BlackScholesPut(S, K, T, sigma, r, q)
 
     def implied_volatility(self):
+        print(f"opt_price: {self.opt_price}")
         impvol = lambda x: self.BS(self.S, self.K, self.T, x, self.r, self.q) - self.opt_price
         iv = fsolve(impvol, SOLVER_STARTING_VALUE, fprime=self._fprime, xtol=IMPLIED_VOLATILITY_TOLERANCE)
         return iv[0]
